@@ -13,6 +13,7 @@ export default class Calculator {
         this.currentOperand = ''
         this.previousOperand = ''
         this.operation = undefined
+        this.isFunction = false
     }
 
     delete() {
@@ -29,7 +30,6 @@ export default class Calculator {
             this.operation = undefined
         }
 
-        console.log(operandLength)
         if(this.operation === 'cos' || this.operation === 'sin' 
         || this.operation === 'tan') {
         

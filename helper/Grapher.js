@@ -26,16 +26,36 @@ export default class Grapher {
               datasets: [{
                 fill: false,
                 pointRadius: 1,
-                borderColor: "rgba(255,0,0,0.5)",
-                data: yValues
+                borderWidth: 1,
+                borderColor: "rgba(25,73,88,0.5)",
+                data: yValues,
+                backgroundColor: "#e755ba",
+                pointBackgroundColor: "#55bae7",
+                pointBorderColor: "#55bae7",
+                pointHoverBackgroundColor: "#55bae7",
+                pointHoverBorderColor: "#55bae7",
               }]
             },
 
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        borderWidth: 2
                     }
+                },
+                plugins: {
+                    title: {
+                        text: `y = ${this.operation}`,
+                        display: true
+                    },
+                    legend: {
+                        display: false,
+                        labels: {
+                            usePointStyle: true
+                        }
+                    },
+
                 },
                 responsive: true
             }

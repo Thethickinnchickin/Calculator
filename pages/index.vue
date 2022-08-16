@@ -1,5 +1,7 @@
 <template>
-      <div class="calculator-grid mt-5">
+<div class="row">
+
+    <div class="calculator-grid col">
         <div class="output">
             <div data-previous-operand class="previous-operand"></div>
             <div data-current-operand class="current-operand"></div>
@@ -33,12 +35,26 @@
         <button data-number></button>
         <button data-equals @click="equals" class="span-four" style="width: 100%">= / Graph</button>
    
-        <div class="chart-container" style="position: relative; height:400px; width: 400px">
-          <canvas id="myChart"></canvas>        
-        </div>
+
 
 
     </div>
+    <div v-if="!calulatorFail" class="chart-container col mt-5 pt-5 mr-5 pr-5" style="position: relative; height:400px; width: 400px">
+      <canvas id="myChart"></canvas>        
+    </div>    
+    <div v-else class="col my-auto mx-auto pt-5">
+      <div class="row">
+        <p>Something Went Wrong Click to Refresh The Page</p>
+      </div>
+      <div class="row ml-5 pl-5">
+      
+        <button @click="refreshPage">Refresh Page</button>  
+      </div>
+    
+    </div>  
+
+</div>
+
 </template>
 
 <script>
@@ -71,9 +87,13 @@ export default {
       grapher: null
     }
   },
+  asyncData() {
+    return {
+      calulatorFail: false
+    }
+  },  
   methods: {
     numbers(value) {
-      console.log(this.isFunction)
       if(this.Calculator === undefined) {
           this.Calculator = new Calculator(document.querySelector('[data-previous-operand]'), 
           document.querySelector('[data-current-operand]'))
@@ -130,6 +150,7 @@ export default {
       this.Calculator.updateDisplay()
     },
     equals(functionType = "") {
+
       if(document.getElementsByClassName('current-operand')[0].innerText.length > 0) {
         if(this.Calculator === undefined) {
             this.Calculator = new Calculator(document.querySelector('[data-previous-operand]'), 
@@ -147,7 +168,9 @@ export default {
 
         this.Calculator.compute()
         this.Calculator.updateDisplay()
-      }
+      }        
+      
+
     },
     clear() {
       if(document.getElementsByClassName('current-operand')[0].innerText.length > 0) {
@@ -178,17 +201,25 @@ export default {
       }
     },
     createGraph(operation) {
-      let canvas = document.getElementById('myChart').getContext('2d')
-      document.getElementById('myChart').getContext('2d').clearRect(0,0, canvas.width, canvas.height);
-      this.graph = null;
+      try{
+        let canvas = document.getElementById('myChart').getContext('2d')
+        document.getElementById('myChart').getContext('2d').clearRect(0,0, canvas.width, canvas.height);
+        this.graph = null;
 
-      if(this.grapher !== undefined) {
-        this.grapher.destroyGraph();
+        if(this.grapher !== undefined) {
+          this.grapher.destroyGraph();
+        }
+
+        this.graph = document.getElementById('myChart').getContext('2d')
+        this.grapher = new Grapher(this.graph, operation);
+        this.grapher.createGraph();
+      } catch(err) {
+        
+        
+        this.clear()
+        this.calulatorFail = true
       }
 
-      this.graph = document.getElementById('myChart').getContext('2d')
-      this.grapher = new Grapher(this.graph, operation);
-      this.grapher.createGraph();
     },
     disableButtons() {
       document.getElementById('squareRoot').disabled = true
@@ -211,6 +242,9 @@ export default {
       document.getElementById('plus').disabled = false;
       document.getElementById('subtract').disabled = false;
       document.getElementById('square').disabled = false;
+    },
+    refreshPage() {
+      window.location.reload()
     }
   }
 }
@@ -231,59 +265,59 @@ body {
   margin: 0;
   padding: 0;
   background: linear-gradient(to right, #CBCE91FF, #EA738DFF);
-  }
+}
 
-  .calculator-grid {
-    display: grid;
-    justify-content: center;
-    align-content: center;
-    min-height: 100vh;
-    grid-template-columns: repeat(4, 100px);
-    grid-template-rows: minmax(120px, auto) repeat(5, 100px);
-    }
+.calculator-grid {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  min-height: 100vh;
+  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: minmax(120px, auto) repeat(5, 100px);
+}
 
-    .calculator-grid > button {
-      cursor: pointer;
-      font-size: 2rem;
-      border: 1px, solid #FFFFFF;
-      outline: none;
-      background-color: rbga(255, 255, 255, 0.75);
-    }
+.calculator-grid > button {
+  cursor: pointer;
+  font-size: 2rem;
+  border: 1px, solid #FFFFFF;
+  outline: none;
+  background-color: rbga(255, 255, 255, 0.75);
+}
 
-      .calculator-grid > button:hover {
-        background-color: #a9a9a9;
-      }
+.calculator-grid > button:hover {
+  background-color: #a9a9a9;
+}
 
-      .span-two {
-        grid-column: span 2;
-        color: #adf802;
-        background-color: rgba(139, 0, 139, 0.8);
-      }
-      .span-four {
-        grid-column: span 4;
-        color: #adf802;
-        background-color: rgba(139, 0, 139, 0.8);
-      }
+.span-two {
+  grid-column: span 2;
+  color: #adf802;
+  background-color: rgba(139, 0, 139, 0.8);
+}
+.span-four {
+  grid-column: span 4;
+  color: #adf802;
+  background-color: rgba(139, 0, 139, 0.8);
+}
 
-      .output{
-        grid-column: 1 / -1;
-        background-color: rgba(0, 0, 0, 0.75);
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        flex-direction: column;
-        padding: 10px;
-        word-wrap: break-word;
-        word-break: break-all;
-      }
+.output{
+  grid-column: 1 / -1;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  flex-direction: column;
+  padding: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+}
 
-      .output .previous-operand{
-        color: rgba(255,255, 255, 0.75);
-        font-size: 1rem;
-      }
+.output .previous-operand{
+  color: rgba(255,255, 255, 0.75);
+  font-size: 1rem;
+}
 
-      .output .current-operand{
-        color: white;
-        font-size: 2rem;
-      }
+.output .current-operand{
+  color: white;
+  font-size: 2rem;
+}
 </style>
